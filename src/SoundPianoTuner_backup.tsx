@@ -227,7 +227,7 @@ function Piano({ activeMidi }: { activeMidi?: number }) {
         }}
       >
         {/* we need to place black keys over gaps: pattern per octave */}
-        {whiteKeys.map((wk, i) => {
+        {whiteKeys.map((wk) => {
           // create an empty slot per white key; we'll overlay a black if its semitone belongs between this and next white
           const thisSemitone = wk.midi % 12;
           // black exists between certain white pairs
