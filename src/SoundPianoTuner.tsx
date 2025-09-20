@@ -226,17 +226,17 @@ function Piano({ activeMidi }: { activeMidi?: number }) {
           pointerEvents: "none",
         }}
       >
-        {/* we need to place black keys over gaps: pattern per octave */}
-        {whiteKeys.map((wk, _i) => {
+        {/* we need to place black keys between white keys */}
+        {whiteKeys.map((wk) => {
           // create an empty slot per white key; we'll overlay a black if its semitone belongs between this and next white
           const thisSemitone = wk.midi % 12;
           // black exists between certain white pairs
           const candidate =
-            (thisSemitone === 0 && 1) ||
-            (thisSemitone === 2 && 3) ||
-            (thisSemitone === 5 && 6) ||
-            (thisSemitone === 7 && 8) ||
-            (thisSemitone === 9 && 10) ||
+            (thisSemitone === 0 && 1) || // C# between C and D
+            (thisSemitone === 2 && 3) || // D# between D and E
+            (thisSemitone === 5 && 6) || // F# between F and G
+            (thisSemitone === 7 && 8) || // G# between G and A
+            (thisSemitone === 9 && 10) || // A# between A and B
             -1;
           const blackMidi = candidate !== -1 ? wk.midi + 1 : null;
 
@@ -249,14 +249,15 @@ function Piano({ activeMidi }: { activeMidi?: number }) {
                 <div
                   style={{
                     position: "absolute",
-                    left: "62%",
-                    transform: "translateX(-50%)",
+                    right: "-0%", // Position between this white key and the next
+                    transform: "translateX(50%)",
                     width: "60%",
                     height: "100%",
                     background:
                       activeMidi === blackMidi ? "#34d399" : "#111827",
                     border: "1px solid #1f2937",
                     borderRadius: "0 0 6px 6px",
+                    zIndex: 10,
                   }}
                 />
               )}
