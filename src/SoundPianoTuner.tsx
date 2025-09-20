@@ -97,13 +97,7 @@ const card: React.CSSProperties = {
   maxWidth: "none",
   boxShadow: "0 10px 30px rgba(0,0,0,.35)",
 };
-const row: React.CSSProperties = {
-  display: "flex",
-  gap: 12,
-  alignItems: "center",
-  flexWrap: "wrap",
-  width: "100%",
-};
+
 const button: React.CSSProperties = {
   background: "#1f6feb",
   border: 0,
@@ -270,12 +264,33 @@ function Piano({ activeMidi }: { activeMidi?: number }) {
 }
 
 // Page Components
-function PianoPage({ midi }: { midi?: number }) {
+function PianoPage({ midi, running }: { midi?: number; running: boolean }) {
   return (
     <div>
       <h3 style={{ margin: "0 0 16px 0", fontSize: 18, opacity: 0.9 }}>
         🎹 Piano Visualizer
       </h3>
+      
+      {!running && (
+        <div
+          style={{
+            background: "#1a2332",
+            padding: 16,
+            borderRadius: 12,
+            marginBottom: 16,
+            textAlign: "center",
+            opacity: 0.8,
+          }}
+        >
+          <div style={{ fontSize: 14, marginBottom: 8 }}>
+            🎤 Start the microphone above to see notes on the piano
+          </div>
+          <div style={{ fontSize: 12, opacity: 0.7 }}>
+            Play or sing a note to see it highlighted
+          </div>
+        </div>
+      )}
+      
       <Piano activeMidi={midi} />
       <div
         style={{
@@ -285,7 +300,10 @@ function PianoPage({ midi }: { midi?: number }) {
           textAlign: "center",
         }}
       >
-        Play or sing a note to see it highlighted on the piano
+        {running 
+          ? "Play or sing a note to see it highlighted on the piano"
+          : "Enable microphone to start detecting notes"
+        }
       </div>
     </div>
   );
@@ -293,16 +311,12 @@ function PianoPage({ midi }: { midi?: number }) {
 
 function TunerPage({
   running,
-  start,
-  stop,
   freq,
   note,
   offset,
   nearestString,
 }: {
   running: boolean;
-  start: () => void;
-  stop: () => void;
   freq: number | null;
   note: string;
   offset: number;
@@ -316,25 +330,25 @@ function TunerPage({
         🎯 Precision Tuner
       </h3>
 
-      <div style={{ ...row, marginBottom: 16 }}>
-        <button
-          style={running ? ghost : button}
-          onClick={running ? stop : start}
-        >
-          {running ? "Stop" : "Start Mic"}
-        </button>
+      {!running && (
         <div
           style={{
-            marginLeft: "auto",
-            fontSize: 12,
-            opacity: 0.75,
-            textAlign: "right",
-            flex: "1 1 auto",
+            background: "#1a2332",
+            padding: 16,
+            borderRadius: 12,
+            marginBottom: 16,
+            textAlign: "center",
+            opacity: 0.8,
           }}
         >
-          Tip: play a single note for best accuracy
+          <div style={{ fontSize: 14, marginBottom: 8 }}>
+            📢 Start the microphone above to begin tuning
+          </div>
+          <div style={{ fontSize: 12, opacity: 0.7 }}>
+            Tip: Play a single note for best accuracy
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Detection readout */}
       <div style={{ ...meterWrap, marginBottom: 16 }}>
@@ -611,13 +625,11 @@ export default function SoundPianoTuner() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "piano":
-        return <PianoPage midi={midi ?? undefined} />;
+        return <PianoPage midi={midi ?? undefined} running={running} />;
       case "tuner":
         return (
           <TunerPage
             running={running}
-            start={start}
-            stop={stop}
             freq={freq}
             note={note}
             offset={offset}
@@ -627,7 +639,7 @@ export default function SoundPianoTuner() {
       case "about":
         return <AboutPage />;
       default:
-        return <PianoPage midi={midi ?? undefined} />;
+        return <PianoPage midi={midi ?? undefined} running={running} />;
     }
   };
 
@@ -652,11 +664,21 @@ export default function SoundPianoTuner() {
             justifyContent: "space-between",
             alignItems: "center",
             marginBottom: 20,
+            flexWrap: "wrap",
+            gap: 12,
           }}
         >
           <h2 style={{ margin: 0, fontSize: 20 }}>Sound → Piano + Tuner</h2>
-          <div style={{ opacity: 0.7, fontSize: 12 }}>
-            {running ? "🎤 Listening…" : "⏸️ Idle"}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button
+              style={running ? ghost : button}
+              onClick={running ? stop : start}
+            >
+              {running ? "🎤 Stop" : "🎤 Start"}
+            </button>
+            <div style={{ opacity: 0.7, fontSize: 12 }}>
+              {running ? "Listening…" : "Idle"}
+            </div>
           </div>
         </div>
 
